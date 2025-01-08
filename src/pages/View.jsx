@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToWishlist } from '../redux/slices/wishlistSlice'
 
 const View = () => {
+
+  // action and selector for wishlist
+  const dispatch =useDispatch()
+  const userWishlist =useSelector(state=>state.wishlistReducer)
 
   // state to show details
   const [product , setProduct] = useState({})
@@ -31,6 +36,16 @@ const View = () => {
   },[])
   
 
+const handleWishlist =()=>{
+  // check is it already in wishlist or not
+  const existingProduct = userWishlist?.find(item=>item?.id == id)
+  if(existingProduct){
+    alert("Product already in your wishlist!!")
+  }else{
+    dispatch(addToWishlist(product))
+  }
+
+}
   
   return (
     <>
@@ -41,7 +56,7 @@ const View = () => {
        <div>
          <img src={product?.thumbnail}  width={'400px'} height={'200px'} alt="" />
          <div className='flex justify-between mt-5'>
-              <button className='bg-blue-600 text-white p-2 rounded'>Add to Wishlist</button>
+              <button onClick={handleWishlist} className='bg-blue-600 text-white p-2 rounded'>Add to Wishlist</button>
               <button className='bg-green-600 text-white p-2 rounded'>Add to Cart</button>
             </div>
        </div>
