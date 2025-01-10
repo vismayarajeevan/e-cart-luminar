@@ -3,12 +3,16 @@ import Header from '../components/Header'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToWishlist } from '../redux/slices/wishlistSlice'
+import { addToCart } from '../redux/slices/cartSlice'
 
 const View = () => {
 
   // action and selector for wishlist
   const dispatch =useDispatch()
   const userWishlist =useSelector(state=>state.wishlistReducer)
+
+  // access state for cart
+  const userCart = useSelector(state=>state.cartReducer)
 
   // state to show details
   const [product , setProduct] = useState({})
@@ -46,6 +50,20 @@ const handleWishlist =()=>{
   }
 
 }
+
+// function to add cart while click the button
+const handleCart =()=>{
+  // action will dispatch at the time of button click
+  dispatch(addToCart(product))
+  // check is it already in wishlist or not
+  const existingProduct = userCart?.find(item=>item?.id == id)
+  if(existingProduct){
+    alert("Product quantity is incrementing!!")
+  }else{
+    alert("Product added to cart")
+  }
+
+}
   
   return (
     <>
@@ -57,7 +75,7 @@ const handleWishlist =()=>{
          <img src={product?.thumbnail}  width={'400px'} height={'200px'} alt="" />
          <div className='flex justify-between mt-5'>
               <button onClick={handleWishlist} className='bg-blue-600 text-white p-2 rounded'>Add to Wishlist</button>
-              <button className='bg-green-600 text-white p-2 rounded'>Add to Cart</button>
+              <button onClick={handleCart} className='bg-green-600 text-white p-2 rounded'>Add to Cart</button>
             </div>
        </div>
        <div>
