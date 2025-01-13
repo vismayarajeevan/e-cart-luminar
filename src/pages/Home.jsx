@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -7,15 +7,55 @@ import { fetchProducts } from '../redux/slices/productSlice'
 
 const Home = () => {
 
+  
+
   const dispatch = useDispatch()
 
   const {allProducts, loading, errorMsg} =useSelector(state =>state.productReducer)
   console.log(allProducts, loading, errorMsg);
+
+
+  //********** */ pagination*****************
+  // create a state to hold current page
+  const [currentPage, setCurrentPage] =useState(1)
+
+  // create a variable to store how many items should show in one page
+  const productPerPage =8
+  // find total page
+  const totalPage = Math.ceil(allProducts?.length/productPerPage)
+
+  // *******to show pagination*************
+  // find last index of current page
+  const currentPageProductLastIndex = currentPage * productPerPage
+  // find first index of currentpage
+  const currentPageProductFirstIndex = currentPageProductLastIndex - productPerPage
+
+  // find which variables to visible
+  const visibleAllProducts = allProducts?.slice(currentPageProductFirstIndex, currentPageProductLastIndex)
   
 
   useEffect(()=>{
     dispatch(fetchProducts())
   },[])
+
+
+// function to navigate page for pagination
+// forward
+const navigateToNextPage =()=>{
+  if(currentPage != totalPage){
+    setCurrentPage(currentPage+1)
+  }
+}
+
+// backward
+const navigateToPrevPage =()=>{
+  if(currentPage != 1){
+    setCurrentPage(currentPage-1)
+  }
+}
+
+
+
   return (
     <>
     <Header insideHome={true} />
@@ -31,7 +71,7 @@ const Home = () => {
         <div className='grid grid-cols-4 gap-4'>
      {
       allProducts?.length>0 ?
-      allProducts?.map((product)=>(
+      visibleAllProducts?.map((product)=>(
         <div key={product?.id} className='rounded border p-2 shadow'>
         <img src={product?.thumbnail} width={'100%'} height={'200px'} alt="" />
         <div className='text-center'>
@@ -47,6 +87,13 @@ const Home = () => {
         </div>
      }
 
+       </div>
+
+       {/* pagination */}
+       <div className='text-2xl text-center font-bold mt-20 '>
+        <span onClick={navigateToPrevPage} className='cursor-pointer'><i class="fa-solid fa-backward me-5"></i></span>
+        <span>{currentPage} of {totalPage}</span>
+        <span onClick={navigateToNextPage} className='cursor-pointer'><i class="fa-solid fa-forward ms-5"></i></span>
        </div>
      </>
      }
